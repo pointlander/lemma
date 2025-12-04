@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"embed"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"io"
 	"math"
@@ -110,7 +111,16 @@ func Random(seed int64) []Fisher {
 	return fisher
 }
 
+var (
+	// FlagEigen is which vector is used
+	FlagEigen = flag.Int("eigen", 0, "which vector is used")
+	// FlagAttention is which vector is used
+	FlagAttention = flag.Int("attention", 0, "which vector is used")
+)
+
 func main() {
+	flag.Parse()
+
 	const (
 		// S is the scaling factor for the softmax
 		S = 1.0 - 1e-300
@@ -198,8 +208,8 @@ func main() {
 		eig.VectorsTo(eigenvectors)
 		i, j := make([]float64, 0, len(iris)), make([]float64, 0, len(iris))
 		for r := range len(iris) {
-			i = append(i, cmplx.Abs(eigenvectors.At(r, 0)))
-			j = append(j, x.At(r, 0))
+			i = append(i, cmplx.Abs(eigenvectors.At(r, *FlagEigen)))
+			j = append(j, x.At(r, *FlagAttention))
 		}
 		values := eig.Values(nil)
 		return Result{
