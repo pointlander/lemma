@@ -14,7 +14,9 @@ import (
 	"math"
 	"math/cmplx"
 	"math/rand"
+	"os"
 	"strconv"
+	"text/tabwriter"
 
 	"gonum.org/v1/gonum/mat"
 )
@@ -157,7 +159,13 @@ func main() {
 		return ab / (math.Sqrt(aa) * math.Sqrt(bb))
 	}
 
-	process := func(iris []Fisher, sm bool) float64 {
+	type Result struct {
+		CosineSimilarity       float64
+		EigenValue             float64
+		MagnitudeEigenvector   float64
+		MagnitudeSelfAttention float64
+	}
+	process := func(iris []Fisher, sm bool) Result {
 		data := make([]float64, 0, 4*len(iris))
 		for _, value := range iris {
 			data = append(data, value.Measures...)
@@ -194,55 +202,60 @@ func main() {
 			j = append(j, x.At(r, 0))
 		}
 		values := eig.Values(nil)
-		fmt.Printf("%16.8f %16.8f %16.8f\n", cmplx.Abs(values[0]), abs(i), abs(j))
-		return cs(i, j)
+		return Result{
+			CosineSimilarity:       cs(i, j),
+			EigenValue:             cmplx.Abs(values[0]),
+			MagnitudeEigenvector:   abs(i),
+			MagnitudeSelfAttention: abs(j),
+		}
 	}
 
-	results, iris, count1, count2 := []float64{}, Load(), 0, 0
+	results, iris, count1, count2 := []Result{}, Load(), 0, 0
 
 	// test with softmax
-	fmt.Printf("eigenvalue, mag eigenvector, mag self attention (with softmax)\n")
-	similarity := process(iris, true)
-	if similarity < .95 {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+	fmt.Fprintf(w, "|eigenvalue\t|mag eigenvector\t|mag self attention\t|cosine similarity (with softmax)|\n")
+	fmt.Fprintf(w, "| ----------- \t| ----------- \t| ----------- \t| ----------- \t|\n")
+	result := process(iris, true)
+	if result.CosineSimilarity < .95 {
 		count1++
 	}
-	results = append(results, similarity)
+	results = append(results, result)
 	for i := range 128 {
 		iris := Random(int64(i + 1))
-		cs := process(iris, true)
-		if cs < .95 {
+		result := process(iris, true)
+		if result.CosineSimilarity < .95 {
 			count1++
 		}
-		results = append(results, cs)
+		results = append(results, result)
 	}
-	fmt.Printf("cosine similarity with softmax\n")
 	for _, value := range results {
-		fmt.Println(value)
+		fmt.Fprintf(w, "|%f\t|%f\t|%f\t|%f|\n", value.EigenValue, value.MagnitudeEigenvector, value.MagnitudeSelfAttention, value.CosineSimilarity)
 	}
-	fmt.Println()
+	fmt.Fprintln(w)
 
 	// test without softmax
-	results = []float64{}
-	fmt.Printf("eigenvalue, mag eigenvector, mag self attention (without softmax)\n")
-	similarity = process(iris, false)
-	if similarity < .999 {
+	results = []Result{}
+	fmt.Fprintf(w, "|eigenvalue\t|mag eigenvector\t|mag self attention\t|cosine similarity (without softmax)|\n")
+	fmt.Fprintf(w, "| ----------- \t| ----------- \t| ----------- \t| ----------- \t|\n")
+	result = process(iris, false)
+	if result.CosineSimilarity < .99 {
 		count2++
 	}
-	results = append(results, similarity)
+	results = append(results, result)
 	for i := range 128 {
 		iris := Random(int64(i + 1))
-		cs := process(iris, false)
-		if cs < .99 {
+		result := process(iris, false)
+		if result.CosineSimilarity < .99 {
 			count2++
 		}
-		results = append(results, cs)
+		results = append(results, result)
 	}
-	fmt.Printf("cosine similarity without softmax\n")
 	for _, value := range results {
-		fmt.Println(value)
+		fmt.Fprintf(w, "|%f\t|%f\t|%f\t|%f|\n", value.EigenValue, value.MagnitudeEigenvector, value.MagnitudeSelfAttention, value.CosineSimilarity)
 	}
+	w.Flush()
 	fmt.Println()
-
-	fmt.Printf("%d/129 outside of cosine similarity of .95\n", count1)
-	fmt.Printf("%d/129 outside of cosine similarity of .999 (without softmax)\n", count2)
+	fmt.Printf("%d/129 outside of cosine similarity of .95 (with softmax)\n", count1)
+	fmt.Printf("%d/129 outside of cosine similarity of .99 (without softmax)\n", count2)
 }
