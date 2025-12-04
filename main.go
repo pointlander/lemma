@@ -215,7 +215,7 @@ func main() {
 	// test with softmax
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	fmt.Fprintf(w, "|eigenvalue\t|mag eigenvector\t|mag self attention\t|cosine similarity (with softmax)|\n")
-	fmt.Fprintf(w, "| ----------- \t| ----------- \t| ----------- \t| ----------- \t|\n")
+	fmt.Fprintf(w, "| -----------: \t| -----------: \t| -----------: \t| -----------: \t|\n")
 	result := process(iris, true)
 	if result.CosineSimilarity < .95 {
 		count1++
@@ -237,7 +237,7 @@ func main() {
 	// test without softmax
 	results = []Result{}
 	fmt.Fprintf(w, "|eigenvalue\t|mag eigenvector\t|mag self attention\t|cosine similarity (without softmax)|\n")
-	fmt.Fprintf(w, "| ----------- \t| ----------- \t| ----------- \t| ----------- \t|\n")
+	fmt.Fprintf(w, "| -----------: \t| -----------: \t| -----------: \t| -----------: \t|\n")
 	result = process(iris, false)
 	if result.CosineSimilarity < .99 {
 		count2++
