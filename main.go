@@ -198,33 +198,50 @@ func main() {
 		return cs(i, j)
 	}
 
-	iris, count1, count2 := Load(), 0, 0
+	results, iris, count1, count2 := []float64{}, Load(), 0, 0
 
 	// test with softmax
-	fmt.Printf("eigenvalue, mag eigenvector, mag self attention\n")
-	if process(iris, true) < .95 {
+	fmt.Printf("eigenvalue, mag eigenvector, mag self attention (with softmax)\n")
+	similarity := process(iris, true)
+	if similarity < .95 {
 		count1++
 	}
+	results = append(results, similarity)
 	for i := range 128 {
 		iris := Random(int64(i + 1))
 		cs := process(iris, true)
 		if cs < .95 {
 			count1++
 		}
+		results = append(results, cs)
 	}
+	fmt.Printf("cosine similarity with softmax\n")
+	for _, value := range results {
+		fmt.Println(value)
+	}
+	fmt.Println()
 
 	// test without softmax
-	fmt.Printf("eigenvalue, mag eigenvector, mag self attention\n")
-	if process(iris, false) < .999 {
+	results = []float64{}
+	fmt.Printf("eigenvalue, mag eigenvector, mag self attention (without softmax)\n")
+	similarity = process(iris, false)
+	if similarity < .999 {
 		count2++
 	}
+	results = append(results, similarity)
 	for i := range 128 {
 		iris := Random(int64(i + 1))
 		cs := process(iris, false)
 		if cs < .99 {
 			count2++
 		}
+		results = append(results, cs)
 	}
+	fmt.Printf("cosine similarity without softmax\n")
+	for _, value := range results {
+		fmt.Println(value)
+	}
+	fmt.Println()
 
 	fmt.Printf("%d/129 outside of cosine similarity of .95\n", count1)
 	fmt.Printf("%d/129 outside of cosine similarity of .999 (without softmax)\n", count2)
