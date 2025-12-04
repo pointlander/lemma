@@ -11,8 +11,8 @@ See code for details.
 ## Algorithm
 The iris dataset is used alongside randomly generated datasets.
 For each dataset the adjacency matrix is computed.
-The eigenvectors and eigenvalues of the adjacency matrix is computed
-To compute self attention, the adjacency matrix and the softmax of the adjacency matrix is multiplied by the input dataset.
+The eigenvectors and eigenvalues of the adjacency matrix are computed
+To compute self attention, the adjacency matrix and the softmax of the adjacency matrix are multiplied by the input dataset.
 The cosine similarity is then computed between the eigenvectors and the vectors computed with self attention.
 
 ## Results
