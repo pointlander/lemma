@@ -140,6 +140,10 @@ func main() {
 		return x
 	}
 
+	abs := func(a []float64) float64 {
+		return math.Sqrt(dot(a, a))
+	}
+
 	cs := func(a, b []float64) float64 {
 		ab := dot(a, b)
 		aa := dot(a, a)
@@ -153,7 +157,7 @@ func main() {
 		return ab / (math.Sqrt(aa) * math.Sqrt(bb))
 	}
 
-	process := func(iris []Fisher) float64 {
+	process := func(iris []Fisher, sm bool) float64 {
 		data := make([]float64, 0, 4*len(iris))
 		for _, value := range iris {
 			data = append(data, value.Measures...)
@@ -169,7 +173,9 @@ func main() {
 			for ii := range row {
 				row[ii] = cp.At(r, ii)
 			}
-			softmax(row)
+			if sm {
+				softmax(row)
+			}
 			cp.SetRow(r, row)
 		}
 		x := mat.NewDense(len(iris), 4, nil)
@@ -187,20 +193,37 @@ func main() {
 			i = append(i, cmplx.Abs(eigenvectors.At(r, 0)))
 			j = append(j, x.At(r, 0))
 		}
-
+		values := eig.Values(nil)
+		fmt.Printf("%16.8f %16.8f %16.8f\n", cmplx.Abs(values[0]), abs(i), abs(j))
 		return cs(i, j)
 	}
 
-	iris, count := Load(), 0
-	if process(iris) < .95 {
-		count++
+	iris, count1, count2 := Load(), 0, 0
+
+	// test with softmax
+	if process(iris, true) < .95 {
+		count1++
 	}
 	for i := range 128 {
 		iris := Random(int64(i + 1))
-		cs := process(iris)
+		cs := process(iris, true)
 		if cs < .95 {
-			count++
+			count1++
 		}
 	}
-	fmt.Printf("%d/129 outside of cosine similarity .95\n", count)
+
+	// test without softmax
+	if process(iris, false) < .999 {
+		count2++
+	}
+	for i := range 128 {
+		iris := Random(int64(i + 1))
+		cs := process(iris, false)
+		if cs < .99 {
+			count2++
+		}
+	}
+
+	fmt.Printf("%d/129 outside of cosine similarity of .95\n", count1)
+	fmt.Printf("%d/129 outside of cosine similarity of .999 (without softmax)\n", count2)
 }
