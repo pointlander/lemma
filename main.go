@@ -201,6 +201,7 @@ func main() {
 	iris, count1, count2 := Load(), 0, 0
 
 	// test with softmax
+	fmt.Printf("eigenvalue, mag eigenvector, mag self attention\n")
 	if process(iris, true) < .95 {
 		count1++
 	}
@@ -213,6 +214,7 @@ func main() {
 	}
 
 	// test without softmax
+	fmt.Printf("eigenvalue, mag eigenvector, mag self attention\n")
 	if process(iris, false) < .999 {
 		count2++
 	}
