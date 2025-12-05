@@ -1,4 +1,4 @@
-# Self attention based computation of principal eigenvector under certian conditions
+# Self attention based computation of principal eigenvector under certain conditions
 ## Abstract
 This code generates the principal eigenvector using [self attention](https://arxiv.org/abs/1706.03762) under the conditions:
 - The input vectors are positive.
