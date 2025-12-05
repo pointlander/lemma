@@ -1,19 +1,19 @@
 # Self attention based computation of principal eigenvector under certian conditions
 ## Abstract
-This code generates the principal eigenvector using self attention under the conditions:
+This code generates the principal eigenvector using [self attention](https://arxiv.org/abs/1706.03762) under the conditions:
 - The input vectors are positive.
 - No input transforms are used.
 
-The self attention based eigenvectors do not have the same magnitude as the principal eigenvector, only the same angle.
-The angle between the vectors is smaller when softmax isn't used.
+The self attention based [eigenvectors](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors) do not have the same magnitude as the principal eigenvector, only the same angle.
+The angle between the vectors is smaller when [softmax](https://en.wikipedia.org/wiki/Softmax_function) isn't used.
 See code for details.
 
 ## Algorithm
-The iris dataset is used alongside randomly generated datasets.
-For each dataset the adjacency matrix is computed.
+The [iris](https://en.wikipedia.org/wiki/Iris_flower_data_set) dataset is used alongside randomly generated datasets.
+For each dataset the [adjacency matrix](https://en.wikipedia.org/wiki/Adjacency_matrix) is computed.
 The eigenvectors and eigenvalues of the adjacency matrix are computed.
 To compute self attention, the adjacency matrix and the softmax of the adjacency matrix are multiplied by the input dataset.
-The cosine similarity is then computed between the eigenvectors and the vectors computed with self attention.
+The [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity) is then computed between the eigenvectors and the vectors computed with self attention.
 
 ## Results
 ### Summary
