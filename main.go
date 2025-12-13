@@ -178,6 +178,11 @@ func main() {
 	process := func(iris []Fisher, sm bool) Result {
 		data := make([]float64, 0, 4*len(iris))
 		for _, value := range iris {
+			//n := dot(value.Measures, value.Measures)
+			//n = math.Sqrt(n)
+			/*for _, value := range value.Measures {
+				data = append(data, value/n)
+			}*/
 			data = append(data, value.Measures...)
 		}
 		// self attention
